@@ -1,5 +1,9 @@
 package com.mashibing.nettyStudy.ts02;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +12,6 @@ public class ClientFrame extends Frame {
 
     TextArea ta=new TextArea();
     TextField tf=new TextField();
-
 
     public ClientFrame(){
         this.setSize(600,400);
@@ -26,6 +29,7 @@ public class ClientFrame extends Frame {
         });
 
         this.setVisible(true);
+        new Client().connect();
     }
 
     public static void main(String[] args) {
