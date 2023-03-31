@@ -1,5 +1,6 @@
 package com.mashibing.nettyStudy.ts02;
 
+import com.mashibing.nettyStudy.ts01.NioServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -12,10 +13,10 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class Server {
 
-    public static ChannelGroup clents=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static ChannelGroup clients =new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public static void main(String[] args) {
-        EventLoopGroup boosGroup=new NioEventLoopGroup(1);
+        EventLoopGroup boosGroup=new NioEventLoopGroup(2);
         EventLoopGroup workGroup=new NioEventLoopGroup(2);
 
         ServerBootstrap b=new ServerBootstrap();
@@ -30,7 +31,7 @@ public class Server {
                             pl.addLast(new ServerChildHandler());
                         }
                     })
-                    .bind(8889)
+                    .bind(8888)
                     .sync();
             System.out.println("server started");
 
@@ -50,7 +51,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Server.clents.add(ctx.channel());
+        NioServer.clients.add(ctx.channel());
     }
 
     @Override
@@ -62,7 +63,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
             buf.getBytes(buf.readerIndex(),bytes);
             System.out.println(new String(bytes));
 
-            Server.clents.writeAndFlush(msg);
+            NioServer.clients.writeAndFlush(msg);
 
         }finally {
 
@@ -72,7 +73,8 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        Server.clents.remove(ctx.channel());
         ctx.close();
     }
 }
+
+

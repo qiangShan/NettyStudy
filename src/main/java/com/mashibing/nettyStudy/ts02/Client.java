@@ -16,18 +16,17 @@ public class Client {
     private Channel channel=null;
 
     public void connect(){
-
         EventLoopGroup group=new NioEventLoopGroup(2);
-        Bootstrap b=new Bootstrap();
+        Bootstrap bs=new Bootstrap();
 
         try{
 
-            ChannelFuture f=b.group(group)
+            ChannelFuture cf=bs.group(group)
                     .channel(NioSocketChannel.class)
                     .handler(new ClientChannelInitializer())
                     .connect("localhost",8888);
 
-            f.addListener(new ChannelFutureListener() {
+            cf.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if(!future.isSuccess()){
@@ -39,8 +38,8 @@ public class Client {
                 }
             });
 
-            f.sync();
-            f.channel().closeFuture();
+            cf.sync();
+            cf.channel().closeFuture().sync();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -50,17 +49,15 @@ public class Client {
     }
 
     public void send(String msg){
-        ByteBuf buf=Unpooled.copiedBuffer(msg.getBytes());
+        ByteBuf buf= Unpooled.copiedBuffer(msg.getBytes(StandardCharsets.UTF_8));
         channel.writeAndFlush(buf);
     }
 
     public static void main(String[] args) {
-        Client client=new Client();
-        client.connect();
+        new Client().connect();
     }
 
 }
-
 
 class ClientChannelInitializer extends ChannelInitializer<SocketChannel>{
 
@@ -75,16 +72,16 @@ class ClientHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf=null;
-
         try{
+
             buf=(ByteBuf) msg;
             byte[] bytes=new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(),bytes);
-            String msgAccepted=new String(bytes);
-            ClientFrame.INSTANCE.updateText(msgAccepted);
-            //System.out.println(new String(bytes));
+            String s=new String(bytes);
+            System.out.println(s);
+
         }finally {
-            if(buf !=null){
+            if(buf!=null){
                 ReferenceCountUtil.release(buf);
             }
         }

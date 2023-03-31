@@ -8,16 +8,14 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class NioServer {
 
-    public static ChannelGroup clents=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static ChannelGroup clients =new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public static void main(String[] args) {
-        EventLoopGroup boosGroup=new NioEventLoopGroup(1);
+        EventLoopGroup boosGroup=new NioEventLoopGroup(2);
         EventLoopGroup workGroup=new NioEventLoopGroup(2);
 
         ServerBootstrap b=new ServerBootstrap();
@@ -52,7 +50,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        NioServer.clents.add(ctx.channel());
+        NioServer.clients.add(ctx.channel());
     }
 
     @Override
@@ -64,7 +62,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
             buf.getBytes(buf.readerIndex(),bytes);
             System.out.println(new String(bytes));
 
-            NioServer.clents.writeAndFlush(msg);
+            NioServer.clients.writeAndFlush(msg);
 
         }finally {
 
