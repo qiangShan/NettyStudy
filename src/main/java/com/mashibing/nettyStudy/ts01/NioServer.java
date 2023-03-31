@@ -3,13 +3,18 @@ package com.mashibing.nettyStudy.ts01;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class NioServer {
+
+    public static ChannelGroup clents=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public static void main(String[] args) {
         EventLoopGroup boosGroup=new NioEventLoopGroup(1);
@@ -44,12 +49,11 @@ public class NioServer {
 
 class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelInboundHandler
 
-    /**
+
     @Override
-    public void channelActive(ChannelHandlerContext context) throws Exception{
-        System.out.println(Thread.currentThread().getId());
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        NioServer.clents.add(ctx.channel());
     }
-     */
 
     @Override
     public void channelRead(ChannelHandlerContext context,Object msg) throws Exception{
@@ -60,11 +64,18 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
             buf.getBytes(buf.readerIndex(),bytes);
             System.out.println(new String(bytes));
 
-            context.writeAndFlush(msg);
+            NioServer.clents.writeAndFlush(msg);
+
         }finally {
-            if(buf !=null){
-                ReferenceCountUtil.release(buf);
-            }
+            //if(buf !=null){
+            //    ReferenceCountUtil.release(buf);
+            //}
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        ctx.close();
     }
 }

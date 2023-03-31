@@ -39,7 +39,7 @@ public class Client {
 
            f.sync();
 
-           System.out.println("........");
+           f.channel().closeFuture().sync();
 
         /**
              b.group(group)
