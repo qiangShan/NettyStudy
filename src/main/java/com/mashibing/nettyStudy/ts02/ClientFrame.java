@@ -1,9 +1,5 @@
 package com.mashibing.nettyStudy.ts02;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +8,8 @@ public class ClientFrame extends Frame {
 
     TextArea ta=new TextArea();
     TextField tf=new TextField();
+
+    Client c=null;
 
     public ClientFrame(){
         this.setSize(600,400);
@@ -23,13 +21,20 @@ public class ClientFrame extends Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //把字符串发送到服务器
+                c.send(tf.getText());
                 ta.setText(ta.getText()+tf.getText());
                 tf.setText("");
             }
         });
 
         this.setVisible(true);
-        new Client().connect();
+
+        connectToServer();
+    }
+
+    public void connectToServer(){
+        c=new Client();
+        c.connect();
     }
 
     public static void main(String[] args) {

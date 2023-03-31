@@ -1,4 +1,4 @@
-package com.mashibing.nettyStudy.ts01;
+package com.mashibing.nettyStudy.ts02;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -8,11 +8,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
-public class NioServer {
+public class Server {
 
     public static ChannelGroup clents=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -32,7 +30,7 @@ public class NioServer {
                             pl.addLast(new ServerChildHandler());
                         }
                     })
-                    .bind(8888)
+                    .bind(8889)
                     .sync();
             System.out.println("server started");
 
@@ -52,7 +50,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        NioServer.clents.add(ctx.channel());
+        Server.clents.add(ctx.channel());
     }
 
     @Override
@@ -64,7 +62,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
             buf.getBytes(buf.readerIndex(),bytes);
             System.out.println(new String(bytes));
 
-            NioServer.clents.writeAndFlush(msg);
+            Server.clents.writeAndFlush(msg);
 
         }finally {
 

@@ -17,7 +17,7 @@ public class Client {
 
     public void connect(){
 
-        EventLoopGroup group=new NioEventLoopGroup(1);
+        EventLoopGroup group=new NioEventLoopGroup(2);
         Bootstrap b=new Bootstrap();
 
         try{
@@ -29,12 +29,12 @@ public class Client {
 
             f.addListener(new ChannelFutureListener() {
                 @Override
-                public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    if(!channelFuture.isSuccess()){
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if(!future.isSuccess()){
                         System.out.println("not connected!");
                     }else{
                         System.out.println("connected!");
-                        channel=channelFuture.channel();
+                        channel=future.channel();
                     }
                 }
             });
@@ -47,6 +47,11 @@ public class Client {
         }finally {
             group.shutdownGracefully();
         }
+    }
+
+    public void send(String msg){
+        ByteBuf buf=Unpooled.copiedBuffer(msg.getBytes());
+        channel.writeAndFlush(buf);
     }
 
     public static void main(String[] args) {
