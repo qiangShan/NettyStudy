@@ -72,6 +72,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
+        Server.clents.remove(ctx.channel());
         ctx.close();
     }
 }

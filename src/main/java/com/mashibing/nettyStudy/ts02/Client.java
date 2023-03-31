@@ -80,7 +80,9 @@ class ClientHandler extends ChannelInboundHandlerAdapter{
             buf=(ByteBuf) msg;
             byte[] bytes=new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(),bytes);
-            System.out.println(new String(bytes));
+            String msgAccepted=new String(bytes);
+            ClientFrame.INSTANCE.updateText(msgAccepted);
+            //System.out.println(new String(bytes));
         }finally {
             if(buf !=null){
                 ReferenceCountUtil.release(buf);

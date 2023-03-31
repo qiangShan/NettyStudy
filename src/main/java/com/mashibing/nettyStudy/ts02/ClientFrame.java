@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 
 public class ClientFrame extends Frame {
 
+    public static final ClientFrame INSTANCE=new ClientFrame();
+
     TextArea ta=new TextArea();
     TextField tf=new TextField();
 
@@ -22,14 +24,14 @@ public class ClientFrame extends Frame {
             public void actionPerformed(ActionEvent e) {
                 //把字符串发送到服务器
                 c.send(tf.getText());
-                ta.setText(ta.getText()+tf.getText());
+                //ta.setText(ta.getText()+tf.getText());
                 tf.setText("");
             }
         });
 
-        this.setVisible(true);
+        //this.setVisible(true);
 
-        connectToServer();
+        //connectToServer();
     }
 
     public void connectToServer(){
@@ -38,6 +40,12 @@ public class ClientFrame extends Frame {
     }
 
     public static void main(String[] args) {
-        new ClientFrame();
+        ClientFrame frame = ClientFrame.INSTANCE;
+        frame.setVisible(true);
+        frame.connectToServer();
+    }
+
+    public void updateText(String msgAccepted) {
+        this.ta.setText(ta.getText()+System.getProperty("line.separator"+msgAccepted));
     }
 }
