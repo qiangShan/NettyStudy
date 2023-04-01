@@ -73,6 +73,8 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter{  //SimpleChannelI
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
+        //判断出现异常的客户端channel，并关闭连接
+        Server.clients.remove(ctx.channel());
         ctx.close();
     }
 }
